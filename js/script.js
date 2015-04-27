@@ -81,13 +81,20 @@ interact('.resize-drag')
 	var below = false;
 	var newYPos = 0;
 	
+	minHeight = 2*parseInt($("#"+target.getAttribute('id')).css("border-width").split("px")[0]);
+	
+	
 	$('.resize-drag').each(function( index ) {
 	  //alert($( this ).css("background-position"));
-	  if (below && $("#"+target.getAttribute('id')).outerHeight()>40) {
+	  if (below &&  $("#"+target.getAttribute('id')).outerHeight()>10) {
 	  
 	    var offset = $( this ).offset();
+		
+		var shiftVal = Math.min($("#"+target.getAttribute('id')).outerHeight()-minHeight,(-1)*event.deltaRect.height);
+		
+		console.log($("#"+target.getAttribute('id')).outerHeight()-minHeight+" or "+(-1)*event.deltaRect.height);
 		newYPos = offset.top - event.deltaRect.height;
-		console.log(event.deltaRect.height);
+		//console.log(event.deltaRect.height);
 		$( this ).offset({ top: newYPos, left: offset.left });
 		//alert($( this ).offset().top);
 	  }

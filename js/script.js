@@ -86,24 +86,45 @@ interact('.resize-drag')
 	
 	$('.resize-drag').each(function( index ) {
 	  //alert($( this ).css("background-position"));
-	  if (below &&  $("#"+target.getAttribute('id')).outerHeight()>10) {
+	  var offset = $( this ).offset();
+	  var newYPos = offset.top - event.deltaRect.height;
+	  if (below &&  $("#"+target.getAttribute('id')).outerHeight()>minHeight) {
 	  
-	    var offset = $( this ).offset();
-		
 		var shiftVal = Math.min($("#"+target.getAttribute('id')).outerHeight()-minHeight,(-1)*event.deltaRect.height);
 		
-		console.log($("#"+target.getAttribute('id')).outerHeight()-minHeight+" or "+(-1)*event.deltaRect.height);
-		newYPos = offset.top - event.deltaRect.height;
+		console.log($("#"+target.getAttribute('id')).outerHeight()-minHeight+" or "+(-1)*event.deltaRect.height
+						+". Outer height: "+$("#"+target.getAttribute('id')).outerHeight()+
+						". Current offset: "+offset.top);
+		
 		//console.log(event.deltaRect.height);
 		$( this ).offset({ top: newYPos, left: offset.left });
 		//alert($( this ).offset().top);
+		
+		newYPos = offset.top - event.deltaRect.height;
+		
+		console.log($("#"+target.getAttribute('id')).outerHeight()-minHeight+" or "+(-1)*event.deltaRect.height
+						+". Outer height: "+$("#"+target.getAttribute('id')).outerHeight()+
+						". New offset: "+$( this ).offset().top);
 	  }
 	  
+	  if(below && $("#"+target.getAttribute('id')).data("prevHeight")>minHeight&&$("#"+target.getAttribute('id')).outerHeight()==minHeight) {
+		newYPos = offset.top + ($("#"+target.getAttribute('id')).data("prevHeight")-minHeight);
+		$( this ).offset({ top: newYPos, left: offset.left });
+	  }
+	  
+	  if(below && $("#"+target.getAttribute('id')).data("prevHeight")==minHeight&&$("#"+target.getAttribute('id')).outerHeight()>minHeight) {
+		newYPos = offset.top - ($("#"+target.getAttribute('id')).outerHeight()-minHeight);
+		$( this ).offset({ top: newYPos, left: offset.left });
+	  }
 	  
 	  if ($( this ).attr('id')==target.getAttribute('id')) {
 		below = true;
 	  }
 	});
+	
+	
+	
+	$("#"+target.getAttribute('id')).data("prevHeight",$("#"+target.getAttribute('id')).outerHeight());
 
     target.style.webkitTransform = target.style.transform =
         'translate(' + x + 'px,' + y + 'px)';
@@ -206,6 +227,15 @@ function createCanvases() {
 function loadApp() {
   var $submitButton = $('button.submit-clothes');
   $submitButton.click(createCanvases);
+  
+  $("#head").data("prevHeight",$("#head").outerHeight());
+  $("#body").data("prevHeight",$("#body").outerHeight());
+  $("#pants").data("prevHeight",$("#pants").outerHeight());
+  $("#shoes").data("prevHeight",$("#shoes").outerHeight());
+  
+  $(".resize-drag").css("background-image","url(images/disney.jpg)");
+  $(".resize-container").css("background-image","url(images/disney.jpg)");
+  
 }
 
 $(loadApp);
